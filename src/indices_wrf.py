@@ -1,5 +1,7 @@
 import os
 import glob
+import sys
+import argparse
 import numpy as np
 import wrf
 import xarray as xr
@@ -20,7 +22,7 @@ dia = datetime.now().strftime('%d')
 
 DIR_ENTRADA = '/home/gilberto/data/WRF'
 DIR_SAIDA   = '/home/gilberto/data/WRF/indices'
-N_CORES     = 64
+N_CORES_MAX = 64
 
 os.makedirs(DIR_SAIDA, exist_ok=True)
 
@@ -166,22 +168,35 @@ def processar_arquivo(caminho: str):
 
 
 if __name__ == '__main__':
-    t0 = time.time()
+    parser = argparse.ArgumentParser(description='Calcula índices de instabilidade do WRF (distribuído).')
+    parser.add_argument('--rank', type=int, default=0, help='ID do nó atual (0-based)')
+    parser.add_argument('--size', type=int, default=1, help='Número total de nós')
+    args = parser.parse_args()
 
-    arquivos = sorted(glob.glob(os.path.join(DIR_ENTRADA, f'wrfout_i{dia}_d02_*.nc')))
-    total = len(arquivos)
+    all_files = sorted(glob.glob(os.path.join(DIR_ENTRADA, f'wrfout_i{dia}_d02_*.nc')))
+    total = len(all_files)
 
     if total == 0:
         print(f'Nenhum arquivo wrfout encontrado em {DIR_ENTRADA}')
-        raise SystemExit(0)
+        sys.exit(0)
 
-    print(f'WRF: {total} arquivos | {N_CORES} núcleos | saída: {DIR_SAIDA}\n')
+    my_files = np.array_split(all_files, args.size)[args.rank].tolist()
+    n_workers = min(N_CORES_MAX, len(my_files)) if my_files else 1
 
-    with mp.Pool(N_CORES) as pool:
+    print('=' * 60)
+    print(f'NÓ {args.rank + 1}/{args.size} | Arquivos: {len(my_files)} | Workers: {n_workers}')
+    print(f'Saída: {DIR_SAIDA}')
+    print('=' * 60)
+
+    t0 = time.time()
+
+    with mp.Pool(n_workers) as pool:
         for i, (ok, orig, novo, tempo) in enumerate(
-            pool.imap_unordered(processar_arquivo, arquivos), 1
+            pool.imap_unordered(processar_arquivo, my_files), 1
         ):
             status = '✓' if ok else '✗ ERRO'
-            print(f'[{i}/{total}] {status} {orig} -> {novo} | {tempo:.2f}s')
+            print(f'[{i}/{len(my_files)}] {status} {orig} -> {novo} | {tempo:.2f}s')
 
-    print(f'\nConcluído em {(time.time() - t0) / 60:.2f} minutos.')
+    print('=' * 60)
+    print(f'NÓ {args.rank + 1} CONCLUÍDO EM {(time.time() - t0) / 60:.2f} MIN')
+    print('=' * 60)

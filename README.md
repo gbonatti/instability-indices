@@ -34,8 +34,8 @@ For complete physical definitions and equations, see [Documentation.md](Document
 
 ### WRF (Weather Research and Forecasting)
 - **Input pattern:** `wrfout_i{day}_d02_*.nc` (one file per timestep)
-- **Distribution:** by file, single node with 64 cores
-- **Launcher:** direct execution
+- **Distribution:** by file, across multiple cluster nodes
+- **Launcher:** `src/roda_indices_wrf.sh`
 
 ---
 
@@ -51,7 +51,8 @@ instability-indices/
     ├── indices_mpas.py        # MPAS index calculator
     ├── indices_wrf.py         # WRF index calculator
     ├── roda_indices_icon.sh   # ICON cluster launcher (4 nodes)
-    └── roda_indices_mpas.sh   # MPAS cluster launcher (4 nodes)
+    ├── roda_indices_mpas.sh   # MPAS cluster launcher (4 nodes)
+    └── roda_indices_wrf.sh    # WRF cluster launcher (4 nodes)
 ```
 
 ---
@@ -104,9 +105,14 @@ bash src/roda_indices_mpas.sh
 
 ### WRF
 
-**Single node (64 cores):**
+**Single node:**
 ```bash
-python src/indices_wrf.py
+python src/indices_wrf.py --rank 0 --size 1
+```
+
+**Distributed across 4 nodes (via launcher):**
+```bash
+bash src/roda_indices_wrf.sh
 ```
 
 ---
@@ -167,7 +173,7 @@ Cluster Node 3 ─┘                    mp.Pool (64 workers)
 
 - **ICON:** distributes files across nodes; each node runs a local pool
 - **MPAS:** distributes timesteps across nodes; each node runs a local pool
-- **WRF:** single-node 64-core pool over files
+- **WRF:** distributes files across nodes; each node runs a local pool
 
 ### Moist Adiabatic Lapse Rate
 

@@ -18,8 +18,8 @@ warnings.filterwarnings('ignore')
 dia = datetime.now().strftime('%d')
 dir_date = datetime.now().strftime('%Y%m%d')
 
-dir_dados = f'/home/gilberto/nest_SP/icon/{dir_date}00'
-dir_saida = '/home/gilberto/nest_SP/icon/indices'
+dir_dados = f'/home/gilberto/data/ICON/{dir_date}00'
+dir_saida = '/home/gilberto/data/ICON/indices'
 N_CORES_MAX = 64
 
 os.makedirs(dir_saida, exist_ok=True)

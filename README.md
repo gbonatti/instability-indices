@@ -187,8 +187,7 @@ The Showalter and Lifted indices require lifting a parcel along the moist adiaba
 
 | Resource | Path |
 |----------|------|
-| ICON input | `/home/gilberto/nest_SP/icon/{YYYYMMDD}00/` |
-| ICON output | `/home/gilberto/nest_SP/icon/indices/` |
+| ICON input/output | `/home/gilberto/data/ICON/` |
 | MPAS input/output | `/home/gilberto/data/MPAS/` |
 | WRF input/output | `/home/gilberto/data/WRF/` |
 | Scripts | `/scratch/gilberto/scripts/` |

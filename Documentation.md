@@ -1,5 +1,7 @@
 # Scientific Documentation — Atmospheric Instability Indices
 
+**Author:** Gilberto Ricardo Bonatti — Especialista em Modelagem Numérica
+
 This document describes the physical basis, mathematical formulation, implementation details, and interpretation thresholds for each index computed by this system.
 
 ---

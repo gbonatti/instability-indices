@@ -1,5 +1,7 @@
 # Instability Indices Calculator
 
+**Author:** Gilberto Ricardo Bonatti — Especialista em Modelagem Numérica
+
 Batch processing system for computing atmospheric convective instability indices from three operational NWP models: **ICON**, **MPAS**, and **WRF**. Designed for distributed execution on HPC clusters (tested on Thor cluster, 64 cores/node).
 
 ---
